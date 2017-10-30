@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>小豆芽的物流管理程序</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <style>
+        body {
+            margin: 0px;
+        }
+
+        .el-main, .el-header, .el-footer {
+            padding: 0px;
+        }
+
+        .el-header {
+            background-color: #409EFF;
+        }
+
+        .el-header b {
+            color: #FFFFFF;
+            display: block;
+            font-size: 30px;
+            margin: 10px 20px;
+        }
+
+        .el-footer{
+            text-align: center;
+        }
+
+        .el-footer .copyright{
+            color: #B4BCCC;
+        }
+
+        .el-pagination {
+            text-align: right;
+        }
+        .button-group{
+            text-align: right;
+            margin-bottom: 10px;
+        }
+        .el-icon-edit, .el-icon-delete{
+            margin-left: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-header>
+            <b>物流管理程序</b>
+        </el-header>
+        <el-main>
+            <el-tabs type="border-card">
+                <el-tab-pane label="订单管理">
+                    <div th:include="order::order"></div>
+                </el-tab-pane>
+                <el-tab-pane label="单号管理"></el-tab-pane>
+                <el-tab-pane label="商品管理"></el-tab-pane>
+            </el-tabs>
+        </el-main>
+    </el-container>
+</div>
+</body>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    new Vue({
+        methods: {
+            handleSizeChange(val) {
+                console.log(`每页 ${val} 条`);
+            },
+            handleCurrentChange(val) {
+                console.log(`当前页: ${val}`);
+            }
+        },
+        data() {
+            return {
+                currentPage1: 5,
+                currentPage2: 5,
+                currentPage3: 5,
+                currentPage4: 4,
+                tableData3: [{
+                    date: '2016-05-03',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路 1518 弄'
+                }, {
+                    date: '2016-05-02',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路 1518 弄'
+                }, {
+                    date: '2016-05-04',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路 1518 弄'
+                }, {
+                    date: '2016-05-01',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路 1518 弄'
+                }, {
+                    date: '2016-05-08',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路 1518 弄'
+                }, {
+                    date: '2016-05-06',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路 1518 弄'
+                }, {
+                    date: '2016-05-07',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路 1518 弄'
+                }, {
+                    date: '2016-05-07',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路 1518 弄'
+                }, {
+                    date: '2016-05-07',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路 1518 弄'
+                }, {
+                    date: '2016-05-07',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路 1518 弄'
+                }],
+                multipleSelection: []
+            }
+        }
+    }).$mount('#app')
+    /*]]>*/
+</script>
+</html>
