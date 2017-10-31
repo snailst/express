@@ -3,12 +3,14 @@
       xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>小豆芽的物流管理程序</title>
+    <title>小豆芽的物流管理系统</title>
     <!-- 引入样式 -->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <!-- 引入组件库 -->
     <script src="https://unpkg.com/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js"></script>
     <style>
         body {
             margin: 0px;
@@ -48,13 +50,30 @@
             margin-left: 10px;
             cursor: pointer;
         }
+        .search{width: 200px}
+        .result-list { text-align:left; max-height: 420px; overflow: scroll;}
+        .result-list li { padding-right: 15px; overflow: hidden; }
+        .result-list li .col1, .result-list li .col2 { display: inline-block; vertical-align:middle; }
+        .result-list li .col1 { position: relative; margin-right: 16px; width: 18px; zoom: 1; }
+        .result-list li .col1 .line1, .result-list li .col1 .line2 { position: absolute; z-index: 1; left: 0; display:block; width: 8px; height: 100px; border-right: 1px solid #c1c1c1; }
+        .result-list li .col1 .line1 { top: -100px; }
+        .result-list li .col1 .line2 { top: 0; }
+        .result-list li .col1 .point { position: absolute; z-index: 2; display:block; top: -9px; left: 0px; width: 18px; height: 18px; background:url("//cdn.kuaidi100.com/images/frame/hao123/mini.png") -16px -66px no-repeat; }
+        .result-list li.last .col1 .point { background:url("//cdn.kuaidi100.com/images/frame/hao123/mini.png") -16px -16px no-repeat; }
+        .result-list li .col2 { padding: 5px 0; width: 215px;}
+        .result-list li .col2 span { display: block; }
+        .result-list li .col2 span:nth-child(1) { color: #ccc; }
+        .result-list li .col2 span:nth-child(2) { margin-top: 5px; color: #9d9d9d; }
+        .result-list li .col2 span:nth-child(2) a{ color: #9d9d9d; }
+        .result-list li.last .col2 span { color: #0aa770; }
+        .result-list li.last .col2 span a{ color: #0aa770; }
     </style>
 </head>
 <body>
 <div id="app">
     <el-container>
         <el-header>
-            <b>物流管理程序</b>
+            <b>小豆芽的物流管理系统</b>
         </el-header>
         <el-main>
             <el-tabs type="border-card">
@@ -68,68 +87,26 @@
     </el-container>
 </div>
 </body>
+<!-- 导入订单页面JAVASCRIPT -->
+<div th:replace="order::order_script"></div>
 <script th:inline="javascript">
     /*<![CDATA[*/
-    new Vue({
-        methods: {
-            handleSizeChange(val) {
-                console.log(`每页 ${val} 条`);
+    var Profile = Vue.extend(ORDER_OPTIONS)
+        .extend({
+            mounted: function () {
+                var me = this;
+                this.$nextTick(function () {
+                    // 加载订单列表
+                    me.order_load();
+                })
             },
-            handleCurrentChange(val) {
-                console.log(`当前页: ${val}`);
+            methods: {},
+            data() {
+                return {
+                }
             }
-        },
-        data() {
-            return {
-                currentPage1: 5,
-                currentPage2: 5,
-                currentPage3: 5,
-                currentPage4: 4,
-                tableData3: [{
-                    date: '2016-05-03',
-                    name: '王小虎',
-                    address: '上海市普陀区金沙江路 1518 弄'
-                }, {
-                    date: '2016-05-02',
-                    name: '王小虎',
-                    address: '上海市普陀区金沙江路 1518 弄'
-                }, {
-                    date: '2016-05-04',
-                    name: '王小虎',
-                    address: '上海市普陀区金沙江路 1518 弄'
-                }, {
-                    date: '2016-05-01',
-                    name: '王小虎',
-                    address: '上海市普陀区金沙江路 1518 弄'
-                }, {
-                    date: '2016-05-08',
-                    name: '王小虎',
-                    address: '上海市普陀区金沙江路 1518 弄'
-                }, {
-                    date: '2016-05-06',
-                    name: '王小虎',
-                    address: '上海市普陀区金沙江路 1518 弄'
-                }, {
-                    date: '2016-05-07',
-                    name: '王小虎',
-                    address: '上海市普陀区金沙江路 1518 弄'
-                }, {
-                    date: '2016-05-07',
-                    name: '王小虎',
-                    address: '上海市普陀区金沙江路 1518 弄'
-                }, {
-                    date: '2016-05-07',
-                    name: '王小虎',
-                    address: '上海市普陀区金沙江路 1518 弄'
-                }, {
-                    date: '2016-05-07',
-                    name: '王小虎',
-                    address: '上海市普陀区金沙江路 1518 弄'
-                }],
-                multipleSelection: []
-            }
-        }
-    }).$mount('#app')
+    });
+    new Profile().$mount('#app')
     /*]]>*/
 </script>
 </html>

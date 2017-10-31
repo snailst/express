@@ -14,7 +14,7 @@
 		<result column="goods_num" property="goods_num" />
 		<result column="agent_name" property="agent_name" />
 		<result column="agent_mobile_number" property="agent_mobile_number" />
-		<result column="aggress" property="aggress" />
+		<result column="address" property="address" />
 		<result column="province" property="province" />
 		<result column="city" property="city" />
 		<result column="county" property="county" />
@@ -22,5 +22,48 @@
 		<result column="street" property="street" />
 		<result column="com" property="com" />
 	</resultMap>
+    <!-- 查询所有的订单 -->
+    <select id="getOrders" parameterType="QueryParam" resultType="com.snailst.express.entity.Orders">
+        SELECT o.id,
+            express_code,
+            create_at,
+            customer_name,
+            mobile_number,
+            goods_id,
+            g.goods_name,
+            goods_spec_id,
+            s.goods_spec_name,
+            goods_num,
+            agent_name,
+            agent_mobile_number,
+            address,
+            province,
+            city,
+            county,
+            town,
+            street,
+            com
+        FROM orders o
+        LEFT JOIN goods g ON o.goods_id = g.id
+        LEFT JOIN goods_spec s ON o.goods_spec_id = s.id
+        <if test="whereSql != null">
+            <where>
+                #{whereSql}
+            </where>
+        </if>
+        <if test="isPaging == true">
+            LIMIT #{start}, #{pageSize}
+        </if>
+    </select>
+    <!-- 查询总记录数 -->
+    <select id="getCount" parameterType="QueryParam" resultType="java.lang.Long">
+        SELECT COUNT(id)
+        FROM orders o
+        <if test="whereSql != null">
+            <where>
+                #{whereSql}
+            </where>
+        </if>
+    </select>
 
 </mapper>

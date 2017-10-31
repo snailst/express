@@ -19,7 +19,7 @@ CREATE TABLE orders (
   COMMENT '商品数量',
   agent_name          VARCHAR(100) COMMENT '代理名称',
   agent_mobile_number VARCHAR(11) COMMENT '代理电话',
-  aggress             VARCHAR(300)       NOT NULL
+  address             VARCHAR(300)       NOT NULL
   COMMENT '收件地址',
   province            VARCHAR(50) COMMENT '省',
   city                VARCHAR(50) COMMENT '市',
@@ -61,4 +61,12 @@ CREATE TABLE express_code (
   COMMENT '快递公司',
   state TINYINT     NOT NULL DEFAULT 1
   COMMENT '是否可用'
+);
+
+-- 物流信息表
+DROP TABLE IF EXISTS logistics;
+CREATE TABLE logistics(
+  id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
+  context LONGTEXT NOT NULL COMMENT '物流信息',
+  order_id BIGINT UNIQUE NOT NULL COMMENT '订单ID'
 );
