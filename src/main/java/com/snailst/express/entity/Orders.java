@@ -96,9 +96,19 @@ public class Orders extends Model<Orders> {
      */
     private String street;
     /**
-     * 快递公司
+     * 快递公司代码
      */
     private String com;
+
+    /**
+     * 快递公司名称
+     */
+    private String company_name;
+
+    /**
+     * 是否已打印
+     */
+    private Boolean is_printed;
 
 
     public Long getId() {
@@ -251,6 +261,22 @@ public class Orders extends Model<Orders> {
 
     public void setGoods_spec_name(String goods_spec_name) {
         this.goods_spec_name = goods_spec_name;
+    }
+
+    public String getCompany_name() {
+        return company_name;
+    }
+
+    public void setCompany_name(String company_name) {
+        this.company_name = company_name;
+    }
+
+    public Boolean getIs_printed() {
+        return is_printed;
+    }
+
+    public void setIs_printed(Boolean is_printed) {
+        this.is_printed = is_printed;
     }
 
     @Override

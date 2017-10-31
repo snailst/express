@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.snailst.express.mapper.GoodsMapper">
+<mapper namespace="com.snailst.express.mapper.ExpressCompanyMapper">
 
 	<!-- 通用查询映射结果 -->
-	<resultMap id="BaseResultMap" type="com.snailst.express.entity.Goods">
+	<resultMap id="BaseResultMap" type="com.snailst.express.entity.ExpressCompany">
 		<id column="id" property="id" />
-		<result column="goods_name" property="goods_name" />
-		<result column="remarks" property="remarks" />
+		<result column="code" property="code" />
+		<result column="name" property="name" />
 	</resultMap>
-    <!-- 查询所有的商品 -->
-    <select id="getGoods" parameterType="QueryParam" resultType="com.snailst.express.entity.Goods">
-        SELECT id, goods_name, `remarks`
-        FROM goods
+    <!-- 查询所有的快递公司 -->
+    <select id="getExpressCompanys" parameterType="QueryParam" resultType="com.snailst.express.entity.ExpressCompany">
+        SELECT id, code, `name`
+        FROM express_company
         <if test="null != whereSql">
             <where>
                 #{whereSql}

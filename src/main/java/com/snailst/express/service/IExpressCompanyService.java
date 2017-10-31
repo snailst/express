@@ -1,6 +1,6 @@
 package com.snailst.express.service;
 
-import com.snailst.express.entity.Goods;
+import com.snailst.express.entity.ExpressCompany;
 import com.baomidou.mybatisplus.service.IService;
 import com.snailst.express.entity.QueryParam;
 
@@ -12,14 +12,14 @@ import java.util.List;
  * </p>
  *
  * @author zhuzhongpei
- * @since 2017-10-30
+ * @since 2017-10-31
  */
-public interface IGoodsService extends IService<Goods> {
+public interface IExpressCompanyService extends IService<ExpressCompany> {
 
     /**
-     * 查询所有的商品
+     * 获取所有的快递公司
      * @param param
      * @return
      */
-    List<Goods> getGoods(QueryParam param);
+    List<ExpressCompany> getExpressCompanys(QueryParam param);
 }

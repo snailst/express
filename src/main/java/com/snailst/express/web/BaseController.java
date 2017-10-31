@@ -14,6 +14,15 @@ public class BaseController {
      * 成功
      * @return
      */
+    public ResponseEntity<Res> SUCCESS(){
+        return new ResponseEntity<>(new Res(ResultEnum.SUCCESS.getCode(),
+                ResultEnum.SUCCESS.getMessage()), HttpStatus.OK);
+    }
+
+    /**
+     * 成功
+     * @return
+     */
     public ResponseEntity<Res> SUCCESS(Object o){
         return new ResponseEntity<>(new Res(ResultEnum.SUCCESS.getCode(),
                 ResultEnum.SUCCESS.getMessage(), o), HttpStatus.OK);

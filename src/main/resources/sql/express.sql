@@ -27,7 +27,11 @@ CREATE TABLE orders (
   town                VARCHAR(50) COMMENT '镇/乡/区',
   street              VARCHAR(300) COMMENT '街道详情',
   com                 VARCHAR(20)        NOT NULL
-  COMMENT '快递公司'
+  COMMENT '快递公司代码',
+  company_name        VARCHAR(100)       NOT NULL
+  COMMENT '快递公司名称',
+  is_printed           TINYINT(0)         DEFAULT 0
+  COMMENT '是否已打印'
 );
 
 -- 商品表
@@ -53,20 +57,34 @@ CREATE TABLE goods_spec (
 -- 快递单号表
 DROP TABLE IF EXISTS express_code;
 CREATE TABLE express_code (
-  id    BIGINT PRIMARY KEY   AUTO_INCREMENT
+  id    BIGINT PRIMARY KEY          AUTO_INCREMENT
   COMMENT '主键',
-  code  VARCHAR(30) NOT NULL
+  code  VARCHAR(30) UNIQUE NOT NULL
   COMMENT '快递单号',
-  com   VARCHAR(50) NOT NULL
+  com   VARCHAR(50)        NOT NULL
   COMMENT '快递公司',
-  state TINYINT     NOT NULL DEFAULT 1
+  state TINYINT            NOT NULL DEFAULT 1
   COMMENT '是否可用'
 );
 
 -- 物流信息表
 DROP TABLE IF EXISTS logistics;
-CREATE TABLE logistics(
-  id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
-  context LONGTEXT NOT NULL COMMENT '物流信息',
-  order_id BIGINT UNIQUE NOT NULL COMMENT '订单ID'
+CREATE TABLE logistics (
+  id       BIGINT PRIMARY KEY AUTO_INCREMENT
+  COMMENT '主键',
+  context  LONGTEXT      NOT NULL
+  COMMENT '物流信息',
+  order_id BIGINT UNIQUE NOT NULL
+  COMMENT '订单ID'
+);
+
+-- 快递公司表
+DROP TABLE IF EXISTS express_company;
+CREATE TABLE express_company (
+  id     BIGINT PRIMARY KEY AUTO_INCREMENT
+  COMMENT '主键',
+  code   VARCHAR(50)  NOT NULL
+  COMMENT '快递公司代号',
+  `name` VARCHAR(100) NOT NULL
+  COMMENT '快递公司名称'
 );

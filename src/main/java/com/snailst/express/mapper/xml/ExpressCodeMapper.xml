@@ -9,5 +9,25 @@
 		<result column="com" property="com" />
 		<result column="state" property="state" />
 	</resultMap>
+    <!-- 快递单号充值 -->
+    <insert id="rechargeExpressCode" parameterType="com.snailst.express.web.dto.ExpressCodeDto">
+        INSERT IGNORE INTO express_code
+        VALUES
+        <foreach collection="list" item="code" separator=",">
+            (#{code}, #{com})
+        </foreach>
+    </insert>
+    <update id="setState">
+        UPDATE express_code
+        SET state = #{useable}
+        WHERE code = #{code}
+    </update>
+    <!-- 获取下一个未使用的快递单号 -->
+    <select id="getNextExpressCode" resultType="java.lang.String">
+        SELECT code
+        FROM express_code
+        WHERE com = #{com} AND state = 1
+        ORDER BY code ASC LIMIT 1
+    </select>
 
 </mapper>

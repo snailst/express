@@ -9,65 +9,77 @@
     <div th:fragment="order">
         <!-- 新增/修改订单面板 -->
         <el-dialog v-bind:title="title" v-bind:visible.sync="order_dialog_visible">
-            <el-form v-bind:label-position="labelPosition" v-bind:label-width="formLabelWidth" v-bind:model="form">
+            <el-form v-bind:label-position="labelPosition" v-bind:rules="order_rules" ref="order_form" v-bind:label-width="formLabelWidth" v-bind:model="order_form">
                 <el-row>
                     <el-col v-bind:span="12">
-                        <el-form-item label="快递公司">
-                            <el-select v-model="express_com" filterable placeholder="请选择快递公司">
+                        <el-form-item label="快递公司" prop="com">
+                            <el-select v-model="order_form.com" v-on:change="order_express_com_change" filterable placeholder="请选择快递公司">
                                 <el-option
                                         v-for="item in express_coms"
-                                        :key="item.id"
-                                        :label="item.com"
-                                        :value="item.id">
+                                        v-bind:key="item.code"
+                                        v-bind:label="item.name"
+                                        v-bind:value="item.code">
                                 </el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col v-bind:span="12">
-                        <el-form-item label="快递单号">
-                            <el-input v-bind:disabled="true" v-model="form.express_code"></el-input>
+                        <el-form-item label="快递单号" prop="express_code">
+                            <el-input v-bind:disabled="true" v-model="order_form.express_code"></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
                 <el-row>
                     <el-col v-bind:span="12">
-                        <el-form-item label="商品名称">
-                            <el-select v-model="goods_id" filterable placeholder="请选择商品规格">
+                        <el-form-item label="商品名称" prop="goods_id">
+                            <el-select v-model="order_form.goods_id" filterable placeholder="请选择快递公司">
                                 <el-option
                                         v-for="item in goods"
-                                        :key="item.id"
-                                        :label="item.goods_name"
-                                        :value="item.id">
+                                        v-bind:key="item.ids"
+                                        v-bind:label="item.goods_name"
+                                        v-bind:value="item.ids">
                                 </el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col v-bind:span="12">
-                        <el-form-item label="商品数量">
-                            <el-input v-model="form.goods_num"></el-input>
+                        <el-form-item label="商品数量" prop="goods_num">
+                            <el-input v-model="order_form.goods_num"></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
                 <el-row>
                     <el-col v-bind:span="12">
-                        <el-form-item label="代理人">
-                            <el-input v-model="form.agent_name"></el-input>
+                        <el-form-item label="客户名称" prop="customer_name">
+                            <el-input v-model="order_form.customer_name"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col v-bind:span="12">
-                        <el-form-item label="代理人电话">
-                            <el-input v-model="form.agent_mobile_number"></el-input>
+                        <el-form-item label="客户电话" prop="mobile_number">
+                            <el-input v-model="order_form.mobile_number"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col v-bind:span="12">
+                        <el-form-item label="代理人" prop="agent_name">
+                            <el-input v-model="order_form.agent_name"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col v-bind:span="12">
+                        <el-form-item label="代理人电话" prop="agent_mobile_number">
+                            <el-input v-model="order_form.agent_mobile_number"></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
                 <el-row>
                     <el-col>
-                        <el-form-item label="地址">
+                        <el-form-item label="地址" prop="address">
                             <el-input
                                     type="textarea"
                                     :rows="2"
                                     placeholder="请输入地址"
-                                    v-model="form.address">
+                                    v-model="order_form.address">
                             </el-input>
                         </el-form-item>
                     </el-col>
@@ -79,15 +91,15 @@
                                     type="textarea"
                                     :rows="2"
                                     placeholder="备注"
-                                    v-model="form.remarks">
+                                    v-model="order_form.remarks">
                             </el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+                <el-button v-on:click="order_reset('order_form')">取 消</el-button>
+                <el-button type="primary" v-on:click="order_save('order_form')">确 定</el-button>
             </div>
         </el-dialog>
         <!-- 物理信息查询面板 -->
@@ -132,10 +144,6 @@
                 v-on:row-dblclick="order_row_dblclick"
                 v-on:selection-change="order_selection_change">
             <el-table-column
-                    type="selection"
-                    width="55">
-            </el-table-column>
-            <el-table-column
                     fixed="right"
                     label="操作"
                     width="80">
@@ -145,16 +153,14 @@
                 </template>
             </el-table-column>
             <el-table-column
-                    fixed
                     prop="create_at"
                     label="订单日期"
-                    width="180">
+                    width="185">
             </el-table-column>
             <el-table-column
-                    fixed
                     prop="express_code"
                     label="快递单号"
-                    width="150">
+                    width="170">
             </el-table-column>
             <el-table-column
                     prop="goods_name"
@@ -213,6 +219,11 @@
                     prop="remarks"
                     label="备注">
             </el-table-column>
+            <el-table-column
+                    fixed="right"
+                    type="selection"
+                    width="55">
+            </el-table-column>
         </el-table>
         <!-- 分页条 -->
         <el-pagination
@@ -226,6 +237,16 @@
             /*<![CDATA[*/
             var ORDER_OPTIONS = {
                 data() {
+                    var checkMobileNumber = (rule, value, callback) => {
+                        if (!value) {
+                            return callback(new Error('手机号码不能为空'));
+                        }
+                        if (value.length != 11) {
+                            callback(new Error('手机号码必须是11位'));
+                        } else {
+                            callback();
+                        }
+                    };
                     return {
                         selections: [],
                         labelPosition: 'right',
@@ -235,27 +256,50 @@
                         order_logistics_ischeck: '',
                         order_dialog_visible: false,
                         order_logistics_visible: false,
-                        express_com: '',
-                        express_coms:[{
-                            id: '',
-                            com: '圆通快递'
-                        },{
-                            id: '',
-                            com: '韵达快递'
-                        },{
-                            id: '',
-                            com: '中通快递'
-                        },{
-                            id: '',
-                            com: '邮政小包'
-                        }],
-                        goods_id: '',
+                        express_coms: [],
                         goods: [],
-                        goods_spec_id: '',
-                        goods_spec: [],
-                        form:{
+                        order_form:{
+                            id: '',
+                            com: '',
+                            company_name: '',
+                            express_code: '',
+                            goods_id: '',
+                            goods_num: '',
+                            customer_name: '',
+                            mobile_number: '',
                             agent_name: '朱忠培',
-                            agent_mobile_number: '13290165390'
+                            agent_mobile_number: '13290165390',
+                            address: '',
+                            remarks: ''
+                        },
+                        order_rules: {
+                            com: [
+                                {required: true, message: '请选择快递公司', trigger: 'blur'}
+                            ],
+                            express_code: [
+                                {required: true, message: '请选择快递公司', trigger: 'blur'}
+                            ],
+                            goods_id: [
+                                {required: true, message: '请选择商品', trigger: 'blur'}
+                            ],
+                            goods_num: [
+                                {required: true, message: '商品数量不能为空', trigger: 'blur'}
+                            ],
+                            customer_name: [
+                                {required: true, message: '客户名称不能为空', trigger: 'blur'}
+                            ],
+                            mobile_number: [
+                                {validator: checkMobileNumber, trigger: 'blur'}
+                            ],
+                            agent_name: [
+                                {required: true, message: '代理人名称不能为空', trigger: 'blur'}
+                            ],
+                            agent_mobile_number: [
+                                {validator: checkMobileNumber, trigger: 'blur'}
+                            ],
+                            address: [
+                                {required: true, message: '地址不能为空', trigger: 'blur'}
+                            ]
                         },
                         create_at: '',
                         search: '',
@@ -307,16 +351,76 @@
                         }
                     },
                     /**
-                     * 快递单号加载
+                     * 快递公司加载
                      */
-                    order_express_code_load() {
-
+                    order_express_company_load() {
+                        var me = this;
+                        axios.post('/express_companys', {
+                            isPaging: false
+                        }).then(function (response) {
+                            // 成功
+                            console.log(response)
+                            var res = response.data;
+                            if(res.code == "200"){
+                                console.log("---:", res.data)
+                                me.express_coms = res.data;
+                            }
+                        }).catch(function (error) {
+                            // 失败
+                            console.log(error)
+                            me.$message.error("快递公司加载失败！");
+                        });
+                    },
+                    /**
+                     * 快递公司改变时加载单号
+                     */
+                    order_express_com_change(val) {
+                        var company = this.express_coms.find((item)=>{
+                            return item.code === val;
+                        });
+                        this.order_form.company_name = company.name;
+                        var me = this;
+                        axios.get('/get_next_express_code', {
+                            params: {
+                                com: val
+                            }
+                        }).then(function (response) {
+                            console.log(response);
+                            var res = response.data;
+                            if(res.code == "200"){
+                                if(null == res.data){
+                                    me.$message({
+                                        message: '快递单号已用完',
+                                        type: 'warning'
+                                    });
+                                    return;
+                                }else{
+                                    me.order_form.express_code = res.data;
+                                }
+                            }
+                        }).catch(function (error) {
+                            console.log(error);
+                        });
                     },
                     /**
                      * 商品加载
                      */
                     order_goods_load() {
-
+                        var me = this;
+                        axios.post('/get_goods', {
+                            isPaging: false
+                        }).then(function (response) {
+                            // 成功
+                            var res = response.data;
+                            if(res.code == "200"){
+                                console.log('---:', res.data)
+                                me.goods = res.data;
+                            }
+                        }).catch(function (error) {
+                            // 失败
+                            console.log(error)
+                            me.$message.error("商品加载失败");
+                        });
                     },
                     /**
                      * 加载订单
@@ -343,7 +447,14 @@
                      */
                     order_add() {
                         this.title = '新增订单';
-                        this.dialogFormVisible = true;
+                        this.order_dialog_visible = true;
+                        /**
+                         * 加载快递公司
+                         */
+                        this.order_express_company_load();
+                        /**
+                         * 加载商品
+                         */
                         this.order_goods_load();
                     },
                     /**
@@ -360,12 +471,29 @@
                         }
                         this.$message({
                             message: '内容已复制到剪切板！',
-                            duration: 1000
+                            duration: 1000,
+                            type: 'success'
                         });
                         new Clipboard('.order_copy', {
                             text: function() {
-                                console.log(JSON.stringify(me.selections))
-                                return JSON.stringify(me.selections);
+                                var rows = me.selections;
+                                console.log(rows)
+                                console.log(typeof rows)
+                                var clipText = [];
+                                rows.forEach(function(v, idx, o){
+                                    clipText.push(
+                                        v.create_at, ' ',
+                                        v.customer_name, ' ',
+                                        v.mobile_number, ' ',
+                                        v.address, ' \r\n',
+                                        v.goods_name, 'x', v.goods_num, ' ',
+                                        v.company_name, ' ',
+                                        v.express_code,
+                                        '\r\n\r\n'
+                                    );
+                                });
+
+                                return clipText.join('').toString();
                             }
                         });
                     },
@@ -373,19 +501,91 @@
                      * 修改订单
                      */
                     order_update(row) {
+                        /**
+                         * 加载快递公司
+                         */
+                        this.order_express_company_load();
+                        /**
+                         * 加载商品
+                         */
+                        this.order_goods_load();
                         this.title = '修改订单';
-                        this.dialogFormVisible = true;
+                        this.order_dialog_visible = true;
+                        this.order_form = {
+                            id: row.id + '',
+                            com: row.com,
+                            express_code: row.express_code,
+                            goods_id: row.goods_id + '',
+                            goods_num: row.goods_num + '',
+                            customer_name: row.customer_name,
+                            mobile_number: row.mobile_number,
+                            agent_name: row.agent_name,
+                            agent_mobile_number: row.agent_mobile_number,
+                            address: row.address,
+                            remarks: row.remarks
+                        };
+                    },
+                    /**
+                     * 保存订单
+                     */
+                    order_save(formName) {
+                        var me = this;
+                        this.$refs[formName].validate((valid) => {
+                            if (valid) {
+                                axios.post('/save_order', me.order_form).then(function (response) {
+                                    // 成功
+                                    console.log(response)
+                                    var res = response.data;
+                                    if(res.code == "200"){
+                                        me.order_dialog_visible = false;
+                                        me.$message({
+                                            message: '保存成功',
+                                            type: 'success'
+                                        });
+                                        me.order_load();
+                                    }
+                                }).catch(function (error) {
+                                    // 失败
+                                    console.log(error)
+                                    me.$message.error("商品加载失败");
+                                });
+                            } else {
+                                return false;
+                            }
+                        });
+                    },
+                    order_reset(formName) {
+                        // 重置form表单
+                        this.$refs[formName].resetFields();
+                        // 关闭Dialog
+                        this.order_dialog_visible = false;
                     },
                     /**
                      * 删除订单
                      */
                     order_del(row) {
+                        var me = this;
                         this.$confirm('此操作将永久删除该订单, 是否继续?', '提示', {
                             confirmButtonText: '确定',
                             cancelButtonText: '取消',
                             type: 'warning'
                         }).then(() => {
                             // 确认
+                            axios.delete("/del_order?id="+row.id+"")
+                            .then(function (response) {
+                                console.log(response);
+                                var res = response.data;
+                                if(res.code == '200'){
+                                    me.$message({
+                                        message: '删除成功',
+                                        type: 'success'
+                                    });
+                                }
+                                me.order_load();
+                            }).catch(function (error) {
+                                console.log(error);
+                                me.$message.error("删除订单失败");
+                            });
                         }).catch(() => {
                             // 取消
                         });

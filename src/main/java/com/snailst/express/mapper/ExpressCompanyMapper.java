@@ -1,6 +1,6 @@
 package com.snailst.express.mapper;
 
-import com.snailst.express.entity.Goods;
+import com.snailst.express.entity.ExpressCompany;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.snailst.express.entity.QueryParam;
 
@@ -12,14 +12,14 @@ import java.util.List;
  * </p>
  *
  * @author zhuzhongpei
- * @since 2017-10-30
+ * @since 2017-10-31
  */
-public interface GoodsMapper extends BaseMapper<Goods> {
+public interface ExpressCompanyMapper extends BaseMapper<ExpressCompany> {
 
     /**
-     * 查询所有的商品
+     * 获取所有的快递公司
      * @param param
      * @return
      */
-    List<Goods> getGoods(QueryParam param);
+    List<ExpressCompany> getExpressCompanys(QueryParam param);
 }

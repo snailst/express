@@ -11,10 +11,10 @@ import java.io.Serializable;
  * </p>
  *
  * @author zhuzhongpei
- * @since 2017-10-30
+ * @since 2017-10-31
  */
-@TableName("express_code")
-public class ExpressCode extends Model<ExpressCode> {
+@TableName("express_company")
+public class ExpressCompany extends Model<ExpressCompany> {
 
     private static final long serialVersionUID = 1L;
 
@@ -23,17 +23,13 @@ public class ExpressCode extends Model<ExpressCode> {
      */
 	private Long id;
     /**
-     * 快递单号
+     * 快递公司代号
      */
 	private String code;
     /**
-     * 快递公司
+     * 快递公司名称
      */
-	private String com;
-    /**
-     * 是否可用
-     */
-	private Boolean state;
+	private String name;
 
 
 	public Long getId() {
@@ -52,23 +48,15 @@ public class ExpressCode extends Model<ExpressCode> {
 		this.code = code;
 	}
 
-	public String getCom() {
-		return com;
+	public String getName() {
+		return name;
 	}
 
-	public void setCom(String com) {
-		this.com = com;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-    public Boolean getState() {
-        return state;
-    }
-
-    public void setState(Boolean state) {
-        this.state = state;
-    }
-
-    @Override
+	@Override
 	protected Serializable pkVal() {
 		return this.id;
 	}

@@ -42,7 +42,9 @@
             county,
             town,
             street,
-            com
+            com,
+            company_name,
+            is_printed
         FROM orders o
         LEFT JOIN goods g ON o.goods_id = g.id
         LEFT JOIN goods_spec s ON o.goods_spec_id = s.id

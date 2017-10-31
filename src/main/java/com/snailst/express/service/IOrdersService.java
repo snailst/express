@@ -28,4 +28,17 @@ public interface IOrdersService extends IService<Orders> {
      * @return
      */
     long getCount(QueryParam param);
+
+
+    /**
+     * 新增/修改订单
+     * @param order
+     */
+    void saveOrder(Orders order);
+
+    /**
+     * 删除订单
+     * @param id
+     */
+    void delOrder(Long id);
 }
