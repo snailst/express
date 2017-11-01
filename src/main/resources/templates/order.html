@@ -136,6 +136,15 @@
             <el-button v-on:click="order_add" type="primary">新增</el-button>
             <el-button v-on:click="order_copy" type="success" class="order_copy">复制</el-button>
             <el-button v-on:click="order_print" type="warning">打印</el-button>
+            <el-dropdown v-on:command="order_print">
+                <el-button type="warning">
+                    打印<i class="el-icon-arrow-down el-icon--right"></i>
+                </el-button>
+                <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item command="A">三通一达</el-dropdown-item>
+                    <el-dropdown-item command="B">邮政小包</el-dropdown-item>
+                </el-dropdown-menu>
+            </el-dropdown>
             <el-button v-on:click="order_refresh_logistics" type="success">刷新物流</el-button>
         </div>
         <!-- 订单列表 -->
@@ -270,6 +279,7 @@
                         }
                     };
                     return {
+                        order_print_command: '',
                         selections: [],
                         labelPosition: 'right',
                         title: '',
@@ -622,7 +632,51 @@
                     /**
                      * 打印订单
                      */
-                    order_print() {},
+                    order_print(command) {
+                        if(this.selections.length == 0){
+                            this.$message({
+                                message: '请选择要打印的订单',
+                                type: 'warning'
+                            });
+                            return;
+                        }
+                        // 加载打印控件
+                        LODOP = getLodop();
+                        LODOP.PRINT_INITA("");
+                        LODOP.SET_PRINT_STYLE("FontSize",12);
+                        LODOP.SET_PRINT_MODE("AUTO_CLOSE_PREWINDOW",1);
+                        // 筛选出所有未打印的订单ID
+                        var ids = [];
+                        this.selections.forEach(function(v, idx, o){
+                            if(!v.is_printed){
+                                ids.push(v);
+                            }
+                        });
+                        axios.post('/print', {
+                            condition: {
+                                ids: ids.join(',').toString()
+                            }
+                        }).then(function (response) {
+                            // 成功
+                            var res = response.data;
+                            if(res.code == "200"){
+                                var orders = res.data;
+                                orders.forEach(function (v, idx, o) {
+                                    if(command === 'A'){
+                                        // 三通一达
+                                        getYouzhengTpl(v);
+                                    } else if (command === 'B'){
+                                        // 邮政小包
+                                        getYouzhengTpl(v)
+                                    }
+                                });
+                                LODOP.PREVIEW();
+                            }
+                        }).catch(function (error) {
+                            // 失败
+                            me.$message.error("商品加载失败");
+                        });
+                    },
                     /**
                      * 刷新物流信息
                      */
@@ -647,8 +701,8 @@
                                 }
                                 me.order_load();
                             }).catch(function (error) {
-                            me.$message.error("删除订单失败");
-                        });
+                                me.$message.error("删除订单失败");
+                            });
                     }
                 }
             };

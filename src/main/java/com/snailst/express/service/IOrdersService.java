@@ -46,4 +46,11 @@ public interface IOrdersService extends IService<Orders> {
      * 刷新所有已打印的没有物流信息的订单
      */
     void refreshLogistics();
+
+    /**
+     * 设置订单打印状态
+     * @param whereSql
+     * @param state
+     */
+    void setPrintState(String whereSql, Boolean state);
 }

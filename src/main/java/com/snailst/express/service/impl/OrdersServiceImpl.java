@@ -53,6 +53,7 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
         LinkedHashMap<String, String> orderBy = param.getOrderBy();
         orderBy.put("is_printed", "ASC");
         orderBy.put("is_send", "ASC");
+        orderBy.put("express_code", "ASC");
         return baseMapper.getOrders(param);
     }
 
@@ -129,5 +130,15 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
                 logger.error("网络异常，查询物流信息失败，{}", e.getMessage());
             }
         }
+    }
+
+    /**
+     * 设置订单打印状态
+     * @param whereSql
+     * @param state
+     */
+    @Override
+    public void setPrintState(String whereSql, Boolean state) {
+        baseMapper.setPrintState(whereSql, state);
     }
 }

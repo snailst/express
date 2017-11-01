@@ -11,6 +11,7 @@
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js"></script>
+    <script th:src="@{/js/print.js}"></script>
     <style>
         body {
             margin: 0px;
@@ -91,6 +92,7 @@
 <!-- 导入订单页面JAVASCRIPT -->
 <div th:replace="order::order_script"></div>
 <script th:inline="javascript">
+    var LODOP;
     /*<![CDATA[*/
     var Profile = Vue.extend(ORDER_OPTIONS)
         .extend({

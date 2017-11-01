@@ -1,8 +1,9 @@
 package com.snailst.express.mapper;
 
-import com.snailst.express.entity.Orders;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.snailst.express.entity.Orders;
 import com.snailst.express.entity.QueryParam;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -28,4 +29,11 @@ public interface OrdersMapper extends BaseMapper<Orders> {
      * @return
      */
     long getCount(QueryParam param);
+
+    /**
+     * 设置打印状态
+     * @param whereSql
+     * @param state
+     */
+    void setPrintState(@Param("whereSql") String whereSql, @Param("state") Boolean state);
 }

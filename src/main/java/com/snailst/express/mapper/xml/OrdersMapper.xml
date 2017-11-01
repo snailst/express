@@ -22,6 +22,12 @@
 		<result column="street" property="street" />
 		<result column="com" property="com" />
 	</resultMap>
+    <!-- 设置打印状态 -->
+    <update id="setPrintState" parameterType="QueryParam">
+        UPDATE orders
+        SET is_printed = #{state}
+        WHERE id in (${whereSql})
+    </update>
     <!-- 查询所有的订单 -->
     <select id="getOrders" parameterType="QueryParam" resultType="com.snailst.express.entity.Orders">
         SELECT o.id,

@@ -174,4 +174,27 @@ public class OrdersController extends BaseController {
             return FAILED();
         }
     }
+
+    /**
+     * 打印订单
+     *
+     * @param param
+     * @return
+     */
+    @RequestMapping(value = "/print", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<Res> print(@RequestBody QueryParam param) {
+        try {
+            String ids = "(" + MapUtils.getString(param.getCondition(), "ids") + ")";
+            // 设置订单打印状态
+            ordersService.setPrintState(ids, Boolean.TRUE);
+            // 查询订单
+            param.setWhereSql("id in " + ids);
+            List<Orders> orders = ordersService.getOrders(param);
+            return SUCCESS(orders);
+        } catch (Exception e) {
+            logger.error("打印订单失败，{}", e.getMessage());
+            return FAILED();
+        }
+    }
 }
