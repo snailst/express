@@ -18,4 +18,6 @@ public class Constants {
      */
     public static final String PROD = "prod";
 
+    public static final String REG_SIGN_FOR = "|签收|";
+
 }

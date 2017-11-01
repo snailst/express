@@ -30,8 +30,10 @@ CREATE TABLE orders (
   COMMENT '快递公司代码',
   company_name        VARCHAR(100)       NOT NULL
   COMMENT '快递公司名称',
-  is_printed           TINYINT(0)         DEFAULT 0
-  COMMENT '是否已打印'
+  is_printed          TINYINT(1)         DEFAULT 0
+  COMMENT '是否已打印',
+  is_send             TINYINT(1)         DEFAULT 0
+  COMMENT '是否发货'
 );
 
 -- 商品表
@@ -70,12 +72,16 @@ CREATE TABLE express_code (
 -- 物流信息表
 DROP TABLE IF EXISTS logistics;
 CREATE TABLE logistics (
-  id       BIGINT PRIMARY KEY AUTO_INCREMENT
+  id          BIGINT PRIMARY KEY AUTO_INCREMENT
   COMMENT '主键',
-  context  LONGTEXT      NOT NULL
+  context     LONGTEXT      NOT NULL
   COMMENT '物流信息',
-  order_id BIGINT UNIQUE NOT NULL
-  COMMENT '订单ID'
+  order_id    BIGINT UNIQUE NOT NULL
+  COMMENT '订单ID',
+  is_finished TINYINT(1)         DEFAULT 0
+  COMMENT '是否已签收',
+  update_at   DATETIME           DEFAULT CURRENT_TIMESTAMP
+  COMMENT '更新时间'
 );
 
 -- 快递公司表

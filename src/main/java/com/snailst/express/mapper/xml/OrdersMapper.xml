@@ -44,14 +44,21 @@
             street,
             com,
             company_name,
-            is_printed
+            is_printed,
+            is_send
         FROM orders o
         LEFT JOIN goods g ON o.goods_id = g.id
         LEFT JOIN goods_spec s ON o.goods_spec_id = s.id
         <if test="whereSql != null">
             <where>
-                #{whereSql}
+                ${whereSql}
             </where>
+        </if>
+        <if test="orderBy.size() > 0">
+            ORDER BY
+            <foreach collection="orderBy" index="key" item="value" separator=",">
+                ${key} ${value}
+            </foreach>
         </if>
         <if test="isPaging == true">
             LIMIT #{start}, #{pageSize}
@@ -63,9 +70,8 @@
         FROM orders o
         <if test="whereSql != null">
             <where>
-                #{whereSql}
+                ${whereSql}
             </where>
         </if>
     </select>
-
 </mapper>

@@ -2,6 +2,7 @@ package com.snailst.express.entity;
 
 import com.baomidou.mybatisplus.activerecord.Model;
 import java.io.Serializable;
+import java.util.Date;
 
 
 /**
@@ -24,10 +25,20 @@ public class Logistics extends Model<Logistics> {
      * 物流信息
      */
 	private String context;
+
+    /**
+     * 是否签收
+     */
+	private Boolean is_finished;
     /**
      * 订单ID
      */
 	private Long order_id;
+
+    /**
+     * 更新时间
+     */
+	private Date update_at;
 
     public Logistics() {
     }
@@ -35,6 +46,7 @@ public class Logistics extends Model<Logistics> {
     public Logistics(String context, Long order_id) {
         this.context = context;
         this.order_id = order_id;
+        this.update_at = new Date();
     }
 
     public Long getId() {
@@ -49,8 +61,9 @@ public class Logistics extends Model<Logistics> {
 		return context;
 	}
 
-	public void setContext(String context) {
+	public Logistics setContext(String context) {
 		this.context = context;
+		return this;
 	}
 
 	public Long getOrder_id() {
@@ -61,7 +74,23 @@ public class Logistics extends Model<Logistics> {
 		this.order_id = order_id;
 	}
 
-	@Override
+    public Boolean getIs_finished() {
+        return is_finished;
+    }
+
+    public void setIs_finished(Boolean is_finished) {
+        this.is_finished = is_finished;
+    }
+
+    public Date getUpdate_at() {
+        return update_at;
+    }
+
+    public void setUpdate_at(Date update_at) {
+        this.update_at = update_at;
+    }
+
+    @Override
 	protected Serializable pkVal() {
 		return this.id;
 	}

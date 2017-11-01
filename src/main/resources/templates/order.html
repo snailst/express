@@ -128,12 +128,15 @@
             <el-date-picker
                     v-model="create_at"
                     type="date"
+                    value-format="yyyy-MM-dd"
+                    v-on:change="order_date_change"
                     placeholder="选择日期">
             </el-date-picker>
-            <el-input v-model="search" class="search" placeholder="请输入客户名称或手机号码"></el-input>
+            <el-input v-model="search" v-on:keyup.native="order_search" class="search" placeholder="请输入客户名称或手机号码"></el-input>
             <el-button v-on:click="order_add" type="primary">新增</el-button>
             <el-button v-on:click="order_copy" type="success" class="order_copy">复制</el-button>
             <el-button v-on:click="order_print" type="warning">打印</el-button>
+            <el-button v-on:click="order_refresh_logistics" type="success">刷新物流</el-button>
         </div>
         <!-- 订单列表 -->
         <el-table
@@ -150,6 +153,25 @@
                 <template slot-scope="scope">
                     <i class="el-icon-edit" title="修改" v-on:click="order_update(scope.row)"></i>
                     <i class="el-icon-delete" title="删除" v-on:click="order_del(scope.row)"></i>
+                </template>
+            </el-table-column>
+            <el-table-column
+                    fixed
+                    label="状态"
+                    width="185">
+                <template slot-scope="scope">
+                    <el-row>
+                        <el-col :span="10">
+                            <el-tag
+                                v-bind:type="scope.row.is_printed == true ? 'success' : 'info'"
+                                close-transition>{{scope.row.printedStr}}</el-tag>
+                        </el-col>
+                        <el-col :span="14">
+                            <el-tag
+                                    v-bind:type="scope.row.is_send == true ? 'danger' : 'info'"
+                                    close-transition>{{scope.row.sendStr}}</el-tag>
+                        </el-col>
+                    </el-row>
                 </template>
             </el-table-column>
             <el-table-column
@@ -310,6 +332,18 @@
                 },
                 methods: {
                     /**
+                     * 关键字筛选
+                     */
+                    order_search() {
+                        this.order_load();
+                    },
+                    /**
+                     * 日期筛选
+                     */
+                    order_date_change() {
+                        this.order_load();
+                    },
+                    /**
                      * 订单列表行双击事件
                      */
                     order_row_dblclick(row) {
@@ -330,10 +364,11 @@
                                     });
                                     return;
                                 }else{
-                                    console.log(obj.data)
                                     me.order_logistics = obj.data;
                                     me.order_logistics_ischeck = obj.ischeck == '1' ? 'last finish' : 'last';
                                     me.order_logistics_visible = true;
+                                    // 刷新订单列表
+                                    me.order_goods_load();
                                 }
                             }
                         }).catch(function (error) {
@@ -413,12 +448,10 @@
                             // 成功
                             var res = response.data;
                             if(res.code == "200"){
-                                console.log('---:', res.data)
                                 me.goods = res.data;
                             }
                         }).catch(function (error) {
                             // 失败
-                            console.log(error)
                             me.$message.error("商品加载失败");
                         });
                     },
@@ -428,17 +461,19 @@
                     order_load() {
                         var me = this;
                         axios.post('/get_orders', {
-                            isPaging: true
+                            isPaging: true,
+                            condition: {
+                                search: this.search,
+                                create_at: this.create_at
+                            }
                         }).then(function (response) {
                             // 成功
-                            console.log(response)
                             var res = response.data;
                             if(res.code == "200"){
                                 me.total = res.totalRecords;
                                 me.orders = res.data;
                             }
                         }).catch(function (error) {
-                            // 失败
                             console.log(error)
                         });
                     },
@@ -477,8 +512,6 @@
                         new Clipboard('.order_copy', {
                             text: function() {
                                 var rows = me.selections;
-                                console.log(rows)
-                                console.log(typeof rows)
                                 var clipText = [];
                                 rows.forEach(function(v, idx, o){
                                     clipText.push(
@@ -534,7 +567,6 @@
                             if (valid) {
                                 axios.post('/save_order', me.order_form).then(function (response) {
                                     // 成功
-                                    console.log(response)
                                     var res = response.data;
                                     if(res.code == "200"){
                                         me.order_dialog_visible = false;
@@ -546,7 +578,6 @@
                                     }
                                 }).catch(function (error) {
                                     // 失败
-                                    console.log(error)
                                     me.$message.error("商品加载失败");
                                 });
                             } else {
@@ -573,7 +604,6 @@
                             // 确认
                             axios.delete("/del_order?id="+row.id+"")
                             .then(function (response) {
-                                console.log(response);
                                 var res = response.data;
                                 if(res.code == '200'){
                                     me.$message({
@@ -583,7 +613,6 @@
                                 }
                                 me.order_load();
                             }).catch(function (error) {
-                                console.log(error);
                                 me.$message.error("删除订单失败");
                             });
                         }).catch(() => {
@@ -594,6 +623,33 @@
                      * 打印订单
                      */
                     order_print() {},
+                    /**
+                     * 刷新物流信息
+                     */
+                    order_refresh_logistics() {
+                        var me = this;
+                        // 确认
+                        var loading = this.$loading({
+                            lock: true,
+                            text: 'Loading',
+                            spinner: 'el-icon-loading',
+                            background: 'rgba(0, 0, 0, 0.7)'
+                        });
+                        axios.get("/refresh_logistics")
+                            .then(function (response) {
+                                var res = response.data;
+                                if(res.code == '200'){
+                                    me.$message({
+                                        message: '刷新成功',
+                                        type: 'success'
+                                    });
+                                    loading.close();
+                                }
+                                me.order_load();
+                            }).catch(function (error) {
+                            me.$message.error("删除订单失败");
+                        });
+                    }
                 }
             };
             /*]]>*/

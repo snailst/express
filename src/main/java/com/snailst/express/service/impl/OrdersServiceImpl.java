@@ -1,16 +1,26 @@
 package com.snailst.express.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.google.gson.reflect.TypeToken;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import com.snailst.express.entity.Logistics;
+import com.snailst.express.entity.LogisticsRes;
 import com.snailst.express.entity.Orders;
 import com.snailst.express.entity.QueryParam;
 import com.snailst.express.mapper.OrdersMapper;
 import com.snailst.express.service.IExpressCodeService;
+import com.snailst.express.service.ILogisticsService;
 import com.snailst.express.service.IOrdersService;
-import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.snailst.express.utils.JsonEnhancer;
+import com.snailst.express.utils.LogisticsUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -24,8 +34,13 @@ import java.util.List;
 @Service
 public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> implements IOrdersService {
 
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
     @Autowired
     private IExpressCodeService expressCodeService;
+
+    @Autowired
+    private ILogisticsService logisticsService;
 
     /**
      * 查询所有的订单
@@ -34,6 +49,10 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
      */
     @Override
     public List<Orders> getOrders(QueryParam param) {
+        // 排序
+        LinkedHashMap<String, String> orderBy = param.getOrderBy();
+        orderBy.put("is_printed", "ASC");
+        orderBy.put("is_send", "ASC");
         return baseMapper.getOrders(param);
     }
 
@@ -80,5 +99,35 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
         }
         // 删除订单
         baseMapper.deleteById(id);
+    }
+
+    /**
+     * 刷新所有已打印的没有物流信息的订单
+     */
+    @Override
+    public void refreshLogistics() {
+        // 1. 查询所有已打印没有物流信息的订单
+        QueryParam param = new QueryParam();
+        param.setIsPaging(Boolean.FALSE);
+        param.setWhereSql(" is_printed = true and is_send = false");
+        List<Orders> orders = baseMapper.getOrders(param);
+        for (Orders order : orders) {
+            try {
+                String context = LogisticsUtils.search(order.getCom(), order.getExpress_code());
+                LogisticsRes logisticsRes = JsonEnhancer.fromJson(context,
+                        new TypeToken<LogisticsRes>() {}.getType());
+                if (logisticsRes.getData().size() > 0) {
+                    // 有物流信息，更新订单物流状态
+                    order.setIs_send(Boolean.TRUE);
+                    baseMapper.update(order, new EntityWrapper<Orders>()
+                            .eq("id", order.getId()));
+                    // 插入物流信息
+                    Logistics logistics = new Logistics(context, order.getId());
+                    logisticsService.insert(logistics);
+                }
+            } catch (UnirestException e) {
+                logger.error("网络异常，查询物流信息失败，{}", e.getMessage());
+            }
+        }
     }
 }

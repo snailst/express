@@ -110,6 +110,11 @@ public class Orders extends Model<Orders> {
      */
     private Boolean is_printed;
 
+    /**
+     * 是否发货
+     */
+    private Boolean is_send;
+
 
     public Long getId() {
         return id;
@@ -277,6 +282,22 @@ public class Orders extends Model<Orders> {
 
     public void setIs_printed(Boolean is_printed) {
         this.is_printed = is_printed;
+    }
+
+    public Boolean getIs_send() {
+        return is_send;
+    }
+
+    public void setIs_send(Boolean is_send) {
+        this.is_send = is_send;
+    }
+
+    public String getSendStr() {
+        return is_send ? "有物流信息" : "暂无物流信息";
+    }
+
+    public String getPrintedStr() {
+        return is_printed ? "已打印" : "未打印";
     }
 
     @Override

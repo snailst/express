@@ -41,4 +41,9 @@ public interface IOrdersService extends IService<Orders> {
      * @param id
      */
     void delOrder(Long id);
+
+    /**
+     * 刷新所有已打印的没有物流信息的订单
+     */
+    void refreshLogistics();
 }

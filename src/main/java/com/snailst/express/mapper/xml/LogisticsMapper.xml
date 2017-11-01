@@ -10,7 +10,7 @@
 	</resultMap>
     <!-- 根据订单ID查询物流信息 -->
     <select id="getLogistics" resultType="com.snailst.express.entity.Logistics">
-        SELECT id, context, order_id
+        SELECT id, context, order_id, is_finished
         FROM logistics
         WHERE order_id = #{order_id}
     </select>
