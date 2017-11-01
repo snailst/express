@@ -6,8 +6,241 @@
     <title>小豆芽的物流管理程序</title>
 </head>
 <body>
-<div th:fragment="express_code">
-
-</div>
+    <div th:fragment="express_code">
+        <!-- 新增面板 -->
+        <el-dialog v-bind:title="title" v-bind:visible.sync="express_code_dialog_visible" width="30%">
+            <el-form v-bind:label-position="labelPosition" v-bind:rules="express_code_rules" ref="express_code_form" v-bind:label-width="formLabelWidth" v-bind:model="express_code_form">
+                <el-form-item label="快递公司" prop="com">
+                    <el-select v-model="express_code_form.com" filterable placeholder="请选择快递公司">
+                        <el-option
+                                v-for="item in express_code_company"
+                                v-bind:key="item.code"
+                                v-bind:label="item.name"
+                                v-bind:value="item.code">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="起始单号" prop="start">
+                    <el-input v-model="express_code_form.start"></el-input>
+                </el-form-item>
+                <el-form-item label="结束单号" prop="end">
+                    <el-input v-model="express_code_form.end"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button v-on:click="express_code_reset('express_code_form')">取 消</el-button>
+                <el-button type="primary" v-on:click="express_code_save('express_code_form')">确 定</el-button>
+            </div>
+        </el-dialog>
+        <!-- 按钮组 -->
+        <div class="button-group">
+            <el-button v-on:click="express_code_add" type="primary">新增</el-button>
+        </div>
+        <!-- 订单列表 -->
+        <el-table
+                :data="express_code"
+                height="550"
+                border
+                style="width: 100%">
+            <el-table-column
+                    fixed
+                    label="操作"
+                    width="80">
+                <template slot-scope="scope">
+                    <i class="el-icon-delete" title="删除" v-on:click="express_code_del(scope.row)"></i>
+                </template>
+            </el-table-column>
+            <el-table-column
+                    prop="code"
+                    label="快递单号"
+                    width="170">
+            </el-table-column>
+            <el-table-column
+                    prop="company_name"
+                    label="快递公司"
+                    width="150">
+            </el-table-column>
+            <el-table-column
+                    fixed
+                    label="是否使用"
+                    width="100">
+                <template slot-scope="scope">
+                    <el-tag
+                            v-bind:type="scope.row.state == true ? 'danger' : 'info'"
+                            close-transition>{{scope.row.stateStr}}</el-tag>
+                </template>
+            </el-table-column>
+        </el-table>
+        <!-- 分页条 -->
+        <el-pagination
+                v-on:current-change="express_code_page_change"
+                v-bind:page-size="express_code_size"
+                layout="total, prev, pager, next"
+                v-bind:total="express_code_total">
+        </el-pagination>
+    </div>
+    <div th:fragment="express_code_script">
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            var EXPRESS_CODE_SCRIPT = {
+                data() {
+                    return {
+                        express_code_size: 20,
+                        express_code_total: 0,
+                        express_code_current_page: 1,
+                        express_code: [],
+                        title: '',
+                        express_code_dialog_visible: false,
+                        express_code_company: [],
+                        express_code_form: {
+                            com: '',
+                            start: '',
+                            end: ''
+                        },
+                        express_code_rules: {
+                            com: [
+                                {required: true, message: '请选择快递公司', trigger: 'blur'}
+                            ],
+                            start: [
+                                {required: true, message: '起始单号不能为空', trigger: 'blur'}
+                            ],
+                            end: [
+                                {required: true, message: '结束单号不能为空', trigger: 'blur'}
+                            ]
+                        }
+                    }
+                },
+                methods: {
+                    /**
+                     * 快递公司加载
+                     */
+                    express_code_company_load() {
+                        var me = this;
+                        axios.post('/express_companys', {
+                            isPaging: false,
+                        }).then(function (response) {
+                            // 成功
+                            var res = response.data;
+                            if(res.code == "200"){
+                                me.express_code_company = res.data;
+                            }
+                        }).catch(function (error) {
+                            // 失败
+                            me.$message.error("快递公司加载失败");
+                        });
+                    },
+                    /**
+                     * 快递单号初始化
+                     */
+                    express_code_add() {
+                        this.express_code_company_load();
+                        this.express_code_dialog_visible = true;
+                    },
+                    /**
+                     * 重置form表单
+                     */
+                    express_code_reset(formName) {
+                        // 重置form表单
+                        this.$refs[formName].resetFields();
+                        // 关闭Dialog
+                        this.express_code_dialog_visible = false;
+                    },
+                    /**
+                     * 翻页
+                     */
+                    express_code_page_change(page) {
+                        this.express_code_current_page = page;
+                        this.express_code_load();
+                    },
+                    /**
+                     * 加载快递单号列表
+                     */
+                    express_code_load() {
+                        var me = this;
+                        axios.post("/get_express_codes", {
+                            isPaging: true,
+                            currentNumber: me.express_code_current_page
+                        }).then(function (response) {
+                            // 成功
+                            var res = response.data;
+                            if(res.code == "200"){
+                                me.express_code_total = res.totalRecords;
+                                me.express_code = res.data;
+                            }
+                        }).catch(function (error) {
+                            // 失败
+                            me.$message.error("快递单号列表加载失败");
+                        });
+                    },
+                    /**
+                     * 保存form表单
+                     */
+                    express_code_save(formName) {
+                        var me = this;
+                        this.$refs[formName].validate((valid) => {
+                            if (valid) {
+                                axios.post('/recharge_express_code', me.express_code_form)
+                                    .then(function (response) {
+                                    // 成功
+                                    var res = response.data;
+                                    if(res.code == "200"){
+                                        me.express_code_dialog_visible = false;
+                                        me.$message({
+                                            message: '保存成功',
+                                            type: 'success'
+                                        });
+                                        me.express_code_load();
+                                    } else {
+                                        me.$message.error("快递单号保存失败");
+                                    }
+                                }).catch(function (error) {
+                                    // 失败
+                                    me.$message.error("快递单号保存失败");
+                                });
+                            } else {
+                                return false;
+                            }
+                        });
+                    },
+                    /**
+                     * 删除
+                     */
+                    express_code_del(row) {
+                        var me = this;
+                        if(row.state){
+                            this.$message({
+                                message: '该单号已被使用，不能删除',
+                                type: 'warning'
+                            });
+                            return;
+                        }
+                        this.$confirm('此操作将永久删除该单号, 是否继续?', '提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        }).then(() => {
+                            // 确认
+                            axios.delete("/del_express_code?id="+row.id+"")
+                                .then(function (response) {
+                                    var res = response.data;
+                                    if(res.code == '200'){
+                                        me.$message({
+                                            message: '删除成功',
+                                            type: 'success'
+                                        });
+                                    }
+                                    me.express_code_load();
+                                }).catch(function (error) {
+                                me.$message.error("删除订单失败");
+                            });
+                        }).catch(() => {
+                            // 取消
+                        });
+                    }
+                }
+            };
+            /*]]>*/
+        </script>
+    </div>
 </body>
 </html>

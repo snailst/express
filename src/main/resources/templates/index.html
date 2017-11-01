@@ -11,7 +11,7 @@
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js"></script>
-    <script th:src="@{/js/print.js}"></script>
+    <!--<script th:src="@{/js/print.js}"></script>-->
     <style>
         body {
             margin: 0px;
@@ -77,13 +77,15 @@
             <b>小豆芽的物流管理系统</b>
         </el-header>
         <el-main>
-            <el-tabs type="border-card">
-                <el-tab-pane label="订单管理">
+            <el-tabs type="border-card" v-on:tab-click="tab_click" value="express_code_load">
+                <el-tab-pane label="订单管理" name="order_load">
                     <div th:include="order::order"></div>
                 </el-tab-pane>
-                <el-tab-pane label="单号管理"></el-tab-pane>
-                <el-tab-pane label="商品管理"></el-tab-pane>
-                <el-tab-pane label="快递公司管理"></el-tab-pane>
+                <el-tab-pane label="单号管理" name="express_code_load">
+                    <div th:replace="express_code::express_code"></div>
+                </el-tab-pane>
+                <el-tab-pane label="商品管理" name="GOODS"></el-tab-pane>
+                <el-tab-pane label="快递公司管理" name="EXPRESS_COMPANY"></el-tab-pane>
             </el-tabs>
         </el-main>
     </el-container>
@@ -91,10 +93,12 @@
 </body>
 <!-- 导入订单页面JAVASCRIPT -->
 <div th:replace="order::order_script"></div>
+<div th:replace="express_code::express_code_script"></div>
 <script th:inline="javascript">
     var LODOP;
     /*<![CDATA[*/
     var Profile = Vue.extend(ORDER_OPTIONS)
+        .extend(EXPRESS_CODE_SCRIPT)
         .extend({
             mounted: function () {
                 var me = this;
@@ -103,7 +107,18 @@
                     me.order_load();
                 })
             },
-            methods: {},
+            methods: {
+                /**
+                 * tab点击事件
+                 */
+                tab_click(tab, event) {
+                    eval([
+                        'this.',
+                        tab.name,
+                        '();'
+                    ].join('').toString())
+                }
+            },
             data() {
                 return {
                 }

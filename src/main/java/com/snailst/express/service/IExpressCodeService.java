@@ -2,7 +2,10 @@ package com.snailst.express.service;
 
 import com.snailst.express.entity.ExpressCode;
 import com.baomidou.mybatisplus.service.IService;
+import com.snailst.express.entity.QueryParam;
 import com.snailst.express.web.dto.ExpressCodeDto;
+
+import java.util.List;
 
 /**
  * <p>
@@ -33,4 +36,24 @@ public interface IExpressCodeService extends IService<ExpressCode> {
      * @param code
      */
     void setState(boolean useable, String code);
+
+    /**
+     * 查询快递单号
+     * @param param
+     * @return
+     */
+    List<ExpressCode> getExpressCodes(QueryParam param);
+
+    /**
+     * 查询总记录数
+     * @param param
+     * @return
+     */
+    long getCount(QueryParam param);
+
+    /**
+     * 删除快递单号
+     * @param id
+     */
+    void delExpressCode(Long id);
 }

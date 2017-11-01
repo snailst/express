@@ -65,8 +65,8 @@ CREATE TABLE express_code (
   COMMENT '快递单号',
   com   VARCHAR(50)        NOT NULL
   COMMENT '快递公司',
-  state TINYINT            NOT NULL DEFAULT 1
-  COMMENT '是否可用'
+  state TINYINT            NOT NULL DEFAULT 0
+  COMMENT '是否使用'
 );
 
 -- 物流信息表
@@ -89,7 +89,7 @@ DROP TABLE IF EXISTS express_company;
 CREATE TABLE express_company (
   id     BIGINT PRIMARY KEY AUTO_INCREMENT
   COMMENT '主键',
-  code   VARCHAR(50)  NOT NULL
+  code   VARCHAR(50) UNIQUE NOT NULL
   COMMENT '快递公司代号',
   `name` VARCHAR(100) NOT NULL
   COMMENT '快递公司名称'

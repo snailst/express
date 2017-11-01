@@ -77,7 +77,7 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
     @Transactional(rollbackFor = Exception.class)
     public void saveOrder(Orders order) {
         if (order.getId() == null) {
-            expressCodeService.setState(Boolean.FALSE, order.getExpress_code());
+            expressCodeService.setState(Boolean.TRUE, order.getExpress_code());
             baseMapper.insert(order);
         } else {
             baseMapper.update(order, new EntityWrapper<Orders>()
@@ -96,7 +96,7 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
         Orders orders = baseMapper.selectById(id);
         if (!orders.getIs_printed()) {
             // 如果未打印，恢复快递单号
-            expressCodeService.setState(Boolean.TRUE, orders.getExpress_code());
+            expressCodeService.setState(Boolean.FALSE, orders.getExpress_code());
         }
         // 删除订单
         baseMapper.deleteById(id);

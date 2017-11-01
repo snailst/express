@@ -2,8 +2,11 @@ package com.snailst.express.mapper;
 
 import com.snailst.express.entity.ExpressCode;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.snailst.express.entity.QueryParam;
 import com.snailst.express.web.dto.ExpressCodeDto;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -34,4 +37,18 @@ public interface ExpressCodeMapper extends BaseMapper<ExpressCode> {
      * @param code
      */
     void setState(@Param("useable") boolean useable, @Param("code") String code);
+
+    /**
+     * 查询总记录数
+     * @param param
+     * @return
+     */
+    long getCount(QueryParam param);
+
+    /**
+     * 查询快递单号
+     * @param param
+     * @return
+     */
+    List<ExpressCode> getExpressCodes(QueryParam param);
 }

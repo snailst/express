@@ -11,9 +11,9 @@
 	</resultMap>
     <!-- 快递单号充值 -->
     <insert id="rechargeExpressCode" parameterType="com.snailst.express.web.dto.ExpressCodeDto">
-        INSERT IGNORE INTO express_code
+        INSERT IGNORE INTO express_code(code, com)
         VALUES
-        <foreach collection="list" item="code" separator=",">
+        <foreach collection="codes" item="code" separator=",">
             (#{code}, #{com})
         </foreach>
     </insert>
@@ -28,6 +28,36 @@
         FROM express_code
         WHERE com = #{com} AND state = 1
         ORDER BY code ASC LIMIT 1
+    </select>
+    <!-- 查询快递单号 -->
+    <select id="getExpressCodes" parameterType="QueryParam" resultType="com.snailst.express.entity.ExpressCode">
+        SELECT a.id, a.code, com, b.name as company_name, state
+        FROM express_code a
+        LEFT JOIN express_company b ON a.com = b.code
+        <if test="whereSql != null">
+            <where>
+                ${whereSql}
+            </where>
+        </if>
+        <if test="orderBy.size() > 0">
+            ORDER BY
+            <foreach collection="orderBy" index="key" item="value" separator=",">
+                ${key} ${value}
+            </foreach>
+        </if>
+        <if test="isPaging == true">
+            LIMIT #{start}, #{pageSize}
+        </if>
+    </select>
+    <!-- 查询总记录数 -->
+    <select id="getCount" resultType="java.lang.Long">
+        SELECT COUNT(a.id)
+        FROM express_code a
+        <if test="whereSql != null">
+            <where>
+                ${whereSql}
+            </where>
+        </if>
     </select>
 
 </mapper>
