@@ -22,4 +22,11 @@ public interface ExpressCompanyMapper extends BaseMapper<ExpressCompany> {
      * @return
      */
     List<ExpressCompany> getExpressCompanys(QueryParam param);
+
+    /**
+     * 查询总记录数
+     * @param param
+     * @return
+     */
+    long getCount(QueryParam param);
 }

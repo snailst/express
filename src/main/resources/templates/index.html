@@ -79,7 +79,7 @@
         <el-main>
             <el-tabs type="border-card" v-on:tab-click="tab_click" value="order_load">
                 <el-tab-pane label="订单管理" name="order_load">
-                    <div th:include="order::order"></div>
+                    <div th:replace="order::order"></div>
                 </el-tab-pane>
                 <el-tab-pane label="单号管理" name="express_code_load">
                     <div th:replace="express_code::express_code"></div>
@@ -87,7 +87,9 @@
                 <el-tab-pane label="商品管理" name="goods_load">
                     <div th:replace="goods::goods"></div>
                 </el-tab-pane>
-                <el-tab-pane label="快递公司管理" name="EXPRESS_COMPANY"></el-tab-pane>
+                <el-tab-pane label="快递公司管理" name="express_company_load">
+                    <div th:replace="express_company::express_company"></div>
+                </el-tab-pane>
             </el-tabs>
         </el-main>
     </el-container>
@@ -97,12 +99,14 @@
 <div th:replace="order::order_script"></div>
 <div th:replace="express_code::express_code_script"></div>
 <div th:replace="goods::goods_script"></div>
+<div th:replace="express_company::express_company_script"></div>
 <script th:inline="javascript">
     var LODOP;
     /*<![CDATA[*/
     var Profile = Vue.extend(ORDER_OPTIONS)
         .extend(EXPRESS_CODE_OPTIONS)
         .extend(GOODS_OPTIONS)
+        .extend(EXPRESS_COMPANY_OPTIONS)
         .extend({
             mounted: function () {
                 var me = this;

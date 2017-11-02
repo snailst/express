@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-cn" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>小豆芽的物流管理程序</title>
+</head>
+<body>
+    <div th:fragment="express_company">
+        <!-- 新增面板 -->
+        <el-dialog v-bind:title="title" v-bind:visible.sync="express_company_dialog_visible" width="30%">
+            <el-form v-bind:label-position="labelPosition" v-bind:rules="express_company_rules" ref="express_company_form" v-bind:label-width="formLabelWidth" v-bind:model="express_company_form">
+                <el-form-item label="快递公司" prop="name">
+                    <el-input v-model="express_company_form.name"></el-input>
+                </el-form-item>
+                <el-form-item label="公司代码" prop="code">
+                    <el-input type="textarea" v-bind:rows="2" v-model="express_company_form.code"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button v-on:click="express_company_reset('express_company_form')">取 消</el-button>
+                <el-button type="primary" v-on:click="express_company_save('express_company_form')">确 定</el-button>
+            </div>
+        </el-dialog>
+        <!-- 按钮组 -->
+        <div class="button-group">
+            <el-button v-on:click="express_company_dialog_visible = true" type="primary">新增</el-button>
+        </div>
+        <!-- 订单列表 -->
+        <el-table
+                :data="express_company"
+                height="550"
+                border
+                style="width: 100%">
+            <el-table-column
+                    fixed
+                    label="操作"
+                    width="80">
+                <template slot-scope="scope">
+                    <i class="el-icon-edit" title="修改" v-on:click="express_company_update(scope.row)"></i>
+                    <i class="el-icon-delete" title="删除" v-on:click="express_company_del(scope.row)"></i>
+                </template>
+            </el-table-column>
+            <el-table-column
+                    prop="name"
+                    label="快递公司"
+                    width="200">
+            </el-table-column>
+            <el-table-column
+                    prop="code"
+                    label="快递公司代码"
+                    width="200">
+            </el-table-column>
+        </el-table>
+        <!-- 分页条 -->
+        <el-pagination
+                v-on:current-change="express_company_page_change"
+                v-bind:page-size="express_company_size"
+                layout="total, prev, pager, next"
+                v-bind:total="express_company_total">
+        </el-pagination>
+    </div>
+    <div th:fragment="express_company_script">
+        <script th:inline="javascript">
+            /*<![[CDATA[*/
+            var EXPRESS_COMPANY_OPTIONS = {
+                data() {
+                    return {
+                        express_company: [],
+                        express_company_dialog_visible: false,
+                        express_company_current_page: 1,
+                        express_company_total: 0,
+                        express_company_size: 20,
+                        express_company_form: {
+                            id: '',
+                            code: '',
+                            name: ''
+                        },
+                        express_company_rules: {
+                            name: [
+                                {required: true, message: '快递公司不能为空', trigger: 'blur'}
+                            ],
+                            code: [
+                                {required: true, message: '快递公司代码', trigger: 'blur'}
+                            ]
+                        }
+                    }
+                },
+                methods: {
+                    /**
+                     * 翻页
+                     * @param page 页码
+                     */
+                    express_company_page_change(page) {
+                        this.express_company_current_page = page;
+                        this.express_company_load();
+                    },
+                    /**
+                     * 加载快递公司列表
+                     */
+                    express_company_load() {
+                        var me = this;
+                        axios.post('/express_companys', {
+                            isPaging: true,
+                            currentNumber: this.express_company_current_page
+                        }).then(function (response) {
+                            var res = response.data;
+                            if(res.code == '200'){
+                                me.express_company = res.data;
+                                me.express_company_total = res.totalRecords;
+                            }else{
+                                me.$message.error("加载快递公司列失败");
+                            }
+                        }).catch(function (error) {
+                            me.$message.error("加载快递公司列表失败");
+                        });
+                    },
+                    /**
+                     * 保存
+                     */
+                    express_company_save(formName) {
+                        var me = this;
+                        this.$refs[formName].validate((valid) => {
+                            if (valid) {
+                                axios.post('/save_express_company', me.express_company_form)
+                                    .then(function (response) {
+                                    // 成功
+                                    var res = response.data;
+                                    if(res.code == "200"){
+                                        me.express_company_dialog_visible = false;
+                                        me.$message({
+                                            message: '保存成功',
+                                            type: 'success'
+                                        });
+                                        me.express_company_load();
+                                    }
+                                }).catch(function (error) {
+                                    // 失败
+                                    me.$message.error("快递公司加载失败");
+                                });
+                            } else {
+                                return false;
+                            }
+                        });
+                    },
+                    /**
+                     * 重置form表单
+                     */
+                    express_company_reset(formName) {
+                        // 重置form表单
+                        this.$refs[formName].resetFields();
+                        // 关闭Dialog
+                        this.express_company_dialog_visible = false;
+                    },
+                    /**
+                     * 修改快递公司
+                     */
+                    express_company_update(row) {
+                        this.express_company_form = {
+                            id: row.id + '',
+                            name: row.name,
+                            code: row.code
+                        };
+                        this.express_company_dialog_visible = true;
+                    },
+                    /**
+                     * 删除快递公司
+                     */
+                    express_company_del(row) {
+                        var me = this;
+                        this.$confirm('此操作将永久删除该快递公司, 是否继续?', '提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        }).then(() => {
+                            // 确认
+                            axios.delete("/del_express_company?id="+row.id+"")
+                                .then(function (response) {
+                                    var res = response.data;
+                                    if(res.code == '200'){
+                                        me.$message({
+                                            message: '删除成功',
+                                            type: 'success'
+                                        });
+                                    }
+                                    me.express_company_load();
+                                }).catch(function (error) {
+                                    me.$message.error("删除失败");
+                                });
+                        }).catch(() => {
+                            // 取消
+                        });
+                    }
+                }
+            };
+            /*]]*/
+        </script>
+    </div>
+</body>
+</html>

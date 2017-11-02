@@ -21,5 +21,15 @@
             LIMIT #{start}, #{pageSize}
         </if>
     </select>
+    <!-- 查询总记录数 -->
+    <select id="getCount" parameterType="QueryParam" resultType="java.lang.Long">
+        SELECT COUNT(id)
+        FROM express_company
+        <if test="null != whereSql">
+            <where>
+                #{whereSql}
+            </where>
+        </if>
+    </select>
 
 </mapper>
