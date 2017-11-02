@@ -21,5 +21,15 @@
             LIMIT #{start}, #{pageSize}
         </if>
     </select>
+    <!--  -->
+    <select id="getCount" parameterType="QueryParam" resultType="java.lang.Long">
+        SELECT COUNT(id)
+        FROM goods
+        <if test="null != whereSql">
+            <where>
+                #{whereSql}
+            </where>
+        </if>
+    </select>
 
 </mapper>

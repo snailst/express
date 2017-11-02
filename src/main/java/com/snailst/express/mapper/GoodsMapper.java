@@ -22,4 +22,11 @@ public interface GoodsMapper extends BaseMapper<Goods> {
      * @return
      */
     List<Goods> getGoods(QueryParam param);
+
+    /**
+     * 查询总记录数
+     * @param param
+     * @return
+     */
+    long getCount(QueryParam param);
 }

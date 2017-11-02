@@ -135,7 +135,7 @@
             <el-input v-model="search" v-on:keyup.native="order_search" class="search" placeholder="请输入客户名称或手机号码"></el-input>
             <el-button v-on:click="order_add" type="primary">新增</el-button>
             <el-button v-on:click="order_copy" type="success" class="order_copy">复制</el-button>
-            <el-button v-on:click="order_print" type="warning">打印</el-button>
+            <!--<el-button v-on:click="order_print" type="warning">打印</el-button>-->
             <el-dropdown v-on:command="order_print">
                 <el-button type="warning">
                     打印<i class="el-icon-arrow-down el-icon--right"></i>
@@ -258,6 +258,7 @@
         </el-table>
         <!-- 分页条 -->
         <el-pagination
+                v-on:current-change="order_page_change"
                 :page-size="pageSize"
                 layout="total, prev, pager, next"
                 :total="total">
@@ -279,6 +280,7 @@
                         }
                     };
                     return {
+                        order_current_page: 1,
                         order_print_command: '',
                         selections: [],
                         labelPosition: 'right',
@@ -465,6 +467,10 @@
                             me.$message.error("商品加载失败");
                         });
                     },
+                    order_page_change(page) {
+                        this.order_current_page = page;
+                        this.order_load();
+                    },
                     /**
                      * 加载订单
                      */
@@ -472,6 +478,7 @@
                         var me = this;
                         axios.post('/get_orders', {
                             isPaging: true,
+                            currentNumber: this.order_current_page,
                             condition: {
                                 search: this.search,
                                 create_at: this.create_at

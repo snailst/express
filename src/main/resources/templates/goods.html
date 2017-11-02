@@ -6,8 +6,192 @@
     <title>小豆芽的物流管理程序</title>
 </head>
 <body>
-<div th:fragment="goods">
-
-</div>
+    <div th:fragment="goods">
+        <!-- 新增面板 -->
+        <el-dialog v-bind:title="title" v-bind:visible.sync="goods_dialog_visible" width="30%">
+            <el-form v-bind:label-position="labelPosition" v-bind:rules="goods_rules" ref="goods_form" v-bind:label-width="formLabelWidth" v-bind:model="goods_form">
+                <el-form-item label="商品名称" prop="goods_name">
+                    <el-input v-model="goods_form.goods_name"></el-input>
+                </el-form-item>
+                <el-form-item label="备注" prop="remarks">
+                    <el-input type="textarea" v-bind:rows="2" v-model="goods_form.remarks"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button v-on:click="goods_reset('goods_form')">取 消</el-button>
+                <el-button type="primary" v-on:click="goods_save('goods_form')">确 定</el-button>
+            </div>
+        </el-dialog>
+        <!-- 按钮组 -->
+        <div class="button-group">
+            <el-button v-on:click="goods_dialog_visible = true" type="primary">新增</el-button>
+        </div>
+        <!-- 订单列表 -->
+        <el-table
+                :data="goods"
+                height="550"
+                border
+                style="width: 100%">
+            <el-table-column
+                    fixed
+                    label="操作"
+                    width="80">
+                <template slot-scope="scope">
+                    <i class="el-icon-edit" title="修改" v-on:click="goods_update(scope.row)"></i>
+                    <i class="el-icon-delete" title="删除" v-on:click="goods_del(scope.row)"></i>
+                </template>
+            </el-table-column>
+            <el-table-column
+                    prop="goods_name"
+                    label="商品名称"
+                    width="170">
+            </el-table-column>
+            <el-table-column
+                    prop="remarks"
+                    label="备注"
+                    width="200">
+            </el-table-column>
+        </el-table>
+        <!-- 分页条 -->
+        <el-pagination
+                v-on:current-change="goods_page_change"
+                v-bind:page-size="goods_size"
+                layout="total, prev, pager, next"
+                v-bind:total="goods_total">
+        </el-pagination>
+    </div>
+    <div th:fragment="goods_script">
+        <script th:inline="javascript">
+            /*<![[CDATA[*/
+            var GOODS_OPTIONS = {
+                data() {
+                    return {
+                        goods: [],
+                        goods_dialog_visible: false,
+                        goods_current_page: 1,
+                        goods_total: 0,
+                        goods_size: 20,
+                        goods_form: {
+                            id: '',
+                            goods_name: '',
+                            remarks: ''
+                        },
+                        goods_rules: {
+                            goods_name: [
+                                {required: true, message: '商品名称不能为空', trigger: 'blur'}
+                            ]
+                        }
+                    }
+                },
+                methods: {
+                    /**
+                     * 翻页
+                     * @param page 页码
+                     */
+                    goods_page_change(page) {
+                        this.goods_current_page = page;
+                        this.goods_load();
+                    },
+                    /**
+                     * 加载商品列表
+                     */
+                    goods_load() {
+                        var me = this;
+                        axios.post('/get_goods', {
+                            isPaging: true,
+                            currentNumber: this.goods_current_page
+                        }).then(function (response) {
+                            var res = response.data;
+                            if(res.code == '200'){
+                                me.goods = res.data;
+                                me.goods_total = res.totalRecords;
+                            }else{
+                                me.$message.error("加载商品列失败");
+                            }
+                        }).catch(function (error) {
+                            me.$message.error("加载商品列表失败");
+                        });
+                    },
+                    /**
+                     * 保存
+                     */
+                    goods_save(formName) {
+                        var me = this;
+                        this.$refs[formName].validate((valid) => {
+                            if (valid) {
+                                axios.post('/save_goods', me.goods_form)
+                                    .then(function (response) {
+                                    // 成功
+                                    var res = response.data;
+                                    if(res.code == "200"){
+                                        me.goods_dialog_visible = false;
+                                        me.$message({
+                                            message: '保存成功',
+                                            type: 'success'
+                                        });
+                                        me.goods_load();
+                                    }
+                                }).catch(function (error) {
+                                    // 失败
+                                    me.$message.error("商品加载失败");
+                                });
+                            } else {
+                                return false;
+                            }
+                        });
+                    },
+                    /**
+                     * 重置form表单
+                     */
+                    goods_reset(formName) {
+                        // 重置form表单
+                        this.$refs[formName].resetFields();
+                        // 关闭Dialog
+                        this.goods_dialog_visible = false;
+                    },
+                    /**
+                     * 修改商品
+                     */
+                    goods_update(row) {
+                        this.goods_form = {
+                            id: row.id + '',
+                            goods_name: row.goods_name,
+                            remarks: row.remarks
+                        };
+                        this.goods_dialog_visible = true;
+                    },
+                    /**
+                     * 删除商品
+                     */
+                    goods_del(row) {
+                        var me = this;
+                        this.$confirm('此操作将永久删除该商品, 是否继续?', '提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        }).then(() => {
+                            // 确认
+                            axios.delete("/del_goods?id="+row.id+"")
+                                .then(function (response) {
+                                    var res = response.data;
+                                    if(res.code == '200'){
+                                        me.$message({
+                                            message: '删除成功',
+                                            type: 'success'
+                                        });
+                                    }
+                                    me.goods_load();
+                                }).catch(function (error) {
+                                    me.$message.error("删除失败");
+                                });
+                        }).catch(() => {
+                            // 取消
+                        });
+                    }
+                }
+            };
+            /*]]*/
+        </script>
+    </div>
 </body>
 </html>
