@@ -142,6 +142,11 @@
                     express_code_reset(formName) {
                         // 重置form表单
                         this.$refs[formName].resetFields();
+                        this.express_code_form = {
+                            com: '',
+                            start: '',
+                            end: ''
+                        };
                         // 关闭Dialog
                         this.express_code_dialog_visible = false;
                     },

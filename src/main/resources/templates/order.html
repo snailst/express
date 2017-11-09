@@ -605,6 +605,21 @@
                     order_reset(formName) {
                         // 重置form表单
                         this.$refs[formName].resetFields();
+                        //
+                        this.order_form = {
+                            id: '',
+                            com: '',
+                            company_name: '',
+                            express_code: '',
+                            goods_id: '',
+                            goods_num: '',
+                            customer_name: '',
+                            mobile_number: '',
+                            agent_name: '朱忠培',
+                            agent_mobile_number: '13290165390',
+                            address: '',
+                            remarks: ''
+                        };
                         // 关闭Dialog
                         this.order_dialog_visible = false;
                     },

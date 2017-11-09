@@ -94,3 +94,11 @@ CREATE TABLE express_company (
   `name` VARCHAR(100) NOT NULL
   COMMENT '快递公司名称'
 );
+INSERT INTO `express_company` (`id`, `code`, `name`)
+VALUES
+  (1, 'yuantong', '圆通快递'),
+  (2, 'zhongtong', '中通快递'),
+  (3, 'yunda', '韵达快递'),
+  (4, 'shentong', '申通快递'),
+  (5, 'annengwuliu', '安能物流'),
+  (6, 'yzguonei', '邮政小包');

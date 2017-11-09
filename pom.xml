@@ -84,7 +84,7 @@
             <id>dev</id>
             <properties>
                 <driver.class>com.mysql.jdbc.Driver</driver.class>
-                <jdbc.url>jdbc:mysql://localhost:3307/express?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false</jdbc.url>
+                <jdbc.url>jdbc:mysql://localhost:3306/express?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false</jdbc.url>
                 <jdbc.user>root</jdbc.user>
                 <jdbc.pwd>sa</jdbc.pwd>
                 <log.level>INFO</log.level>
