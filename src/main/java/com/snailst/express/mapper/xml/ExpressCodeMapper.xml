@@ -26,7 +26,7 @@
     <select id="getNextExpressCode" resultType="java.lang.String">
         SELECT code
         FROM express_code
-        WHERE com = #{com} AND state = 1
+        WHERE com = #{com} AND state = 0
         ORDER BY code ASC LIMIT 1
     </select>
     <!-- 查询快递单号 -->

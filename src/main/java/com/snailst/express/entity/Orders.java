@@ -115,6 +115,11 @@ public class Orders extends Model<Orders> {
      */
     private Boolean is_send;
 
+    /**
+     * 備註
+     */
+    private String remarks;
+
 
     public Long getId() {
         return id;
@@ -298,6 +303,14 @@ public class Orders extends Model<Orders> {
 
     public String getPrintedStr() {
         return is_printed ? "已打印" : "未打印";
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
 
     @Override

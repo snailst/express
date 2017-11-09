@@ -33,7 +33,8 @@ CREATE TABLE orders (
   is_printed          TINYINT(1)         DEFAULT 0
   COMMENT '是否已打印',
   is_send             TINYINT(1)         DEFAULT 0
-  COMMENT '是否发货'
+  COMMENT '是否发货',
+  remarks             VARCHAR(500) COMMENT '備註'
 );
 
 -- 商品表
@@ -91,7 +92,7 @@ CREATE TABLE express_company (
   COMMENT '主键',
   code   VARCHAR(50) UNIQUE NOT NULL
   COMMENT '快递公司代号',
-  `name` VARCHAR(100) NOT NULL
+  `name` VARCHAR(100)       NOT NULL
   COMMENT '快递公司名称'
 );
 INSERT INTO `express_company` (`id`, `code`, `name`)

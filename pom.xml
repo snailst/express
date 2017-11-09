@@ -6,7 +6,7 @@
 	<groupId>com.snailst</groupId>
 	<artifactId>express</artifactId>
 	<version>1.0.0</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<name>express</name>
 	<description>express bill print, logistics search</description>
@@ -39,7 +39,20 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+            <!-- 移除嵌入式tomcat插件 -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </exclusion>
+            </exclusions>
 		</dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+            <scope>provided</scope>
+        </dependency>
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
@@ -103,10 +116,10 @@
                 <driver.class>com.mysql.jdbc.Driver</driver.class>
                 <jdbc.url>jdbc:mysql://localhost:3306/express?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false</jdbc.url>
                 <jdbc.user>root</jdbc.user>
-                <jdbc.pwd>sa</jdbc.pwd>
+                <jdbc.pwd>root</jdbc.pwd>
                 <log.level>INFO</log.level>
                 <log.file.name>express</log.file.name>
-                <log.file.path>D://logs</log.file.path>
+                <log.file.path>C://logs</log.file.path>
                 <mode>prod</mode>
             </properties>
         </profile>

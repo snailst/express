@@ -671,7 +671,7 @@
                         var ids = [];
                         this.selections.forEach(function(v, idx, o){
                             if(!v.is_printed){
-                                ids.push(v);
+                                ids.push(v.id);
                             }
                         });
                         axios.post('/print', {
@@ -686,7 +686,7 @@
                                 orders.forEach(function (v, idx, o) {
                                     if(command === 'A'){
                                         // 三通一达
-                                        getYouzhengTpl(v);
+                                        getYuantongTpl(v);
                                     } else if (command === 'B'){
                                         // 邮政小包
                                         getYouzhengTpl(v)

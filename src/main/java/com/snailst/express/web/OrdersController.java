@@ -189,7 +189,7 @@ public class OrdersController extends BaseController {
             // 设置订单打印状态
             ordersService.setPrintState(ids, Boolean.TRUE);
             // 查询订单
-            param.setWhereSql("id in " + ids);
+            param.setWhereSql("o.id in " + ids);
             List<Orders> orders = ordersService.getOrders(param);
             return SUCCESS(orders);
         } catch (Exception e) {
