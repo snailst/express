@@ -31,7 +31,7 @@ public class Orders extends Model<Orders> {
     /**
      * 创建时间
      */
-    @JsonFormat(pattern = "yyyy年MM月dd日 HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy年MM月dd日", timezone = "GMT+8")
     private Date create_at;
     /**
      * 客户名称
@@ -298,7 +298,7 @@ public class Orders extends Model<Orders> {
     }
 
     public String getSendStr() {
-        return is_send ? "有物流信息" : "暂无物流信息";
+        return is_send ? "有物流" : "暂无物流";
     }
 
     public String getPrintedStr() {

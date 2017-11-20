@@ -124,7 +124,7 @@ function getLodop(oOBJECT,oEMBED){
  * 圆通快递单模板
  * @param o
  */
-function getYuantongTpl(o){
+function getYuantongTpl(o, LODOP){
     LODOP.NewPage();
     // 快递单号
     LODOP.ADD_PRINT_TEXT(0.5*32, 1.5*32, 10*32, 0.5*32, o.express_code);
@@ -151,7 +151,7 @@ function getYuantongTpl(o){
  * 中通快递单模板
  * @param o
  */
-function getZhongtongTpl(o){
+function getZhongtongTpl(o, LODOP){
     LODOP.NewPage();
     // 快递单号
     LODOP.ADD_PRINT_TEXT(0.5*32, 1.5*32, 10*32, 0.5*32, o.express_code);
@@ -179,7 +179,7 @@ function getZhongtongTpl(o){
  * 邮政快递单模板
  * @param o
  */
-function getYouzhengTpl(o){
+function getYouzhengTpl(o, LODOP){
     LODOP.NewPage();
     // 快递单号
     LODOP.ADD_PRINT_TEXT(0.5*32, 1.5*34, 10*34, 0.5*34, o.express_code);

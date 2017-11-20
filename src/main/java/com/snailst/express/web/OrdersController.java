@@ -53,6 +53,7 @@ public class OrdersController extends BaseController {
             Map<String, Object> condition = param.getCondition();
             String search = MapUtils.getString(condition, "search");
             String createAt = MapUtils.getString(condition, "create_at");
+            String isPrinted = MapUtils.getString(condition, "is_printed");
             StringBuffer sql = new StringBuffer();
             if (StringUtils.isNotEmpty(search)) {
                 sql.append("(mobile_number like '%").append(search)
@@ -61,6 +62,10 @@ public class OrdersController extends BaseController {
             if (StringUtils.isNotEmpty(createAt)) {
                 if (sql.length() > 0) sql.append(" and ");
                 sql.append(" DATE_FORMAT(create_at, '%Y-%m-%d') = '").append(createAt).append("'");
+            }
+            if(StringUtils.isNotBlank(isPrinted)){
+                if (sql.length() > 0) sql.append(" and ");
+                sql.append(" is_printed = ").append(isPrinted);
             }
             param.setWhereSql(sql.toString());
             long totalRecords = ordersService.getCount(param);

@@ -7,10 +7,11 @@
     <!-- 引入样式 -->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <!-- 引入组件库 -->
-    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+
+    <script th:src="@{/webjars/vue/2.5.3/vue.js}"></script>
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js"></script>
+    <script th:src="@{/webjars/axios/0.17.0/dist/axios.js}"></script>
+    <script th:src="@{/webjars/clipboard/1.7.1/dist/clipboard.js}"></script>
     <script th:src="@{/js/print.js}"></script>
     <style>
         body {
@@ -30,6 +31,10 @@
             display: block;
             font-size: 30px;
             margin: 10px 20px;
+        }
+
+        .el-table td {
+            padding: 5px 0;
         }
 
         .el-footer{

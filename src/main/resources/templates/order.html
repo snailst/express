@@ -133,6 +133,7 @@
                     placeholder="选择日期">
             </el-date-picker>
             <el-input v-model="search" v-on:keyup.native="order_search" class="search" placeholder="请输入客户名称或手机号码"></el-input>
+            <el-button v-on:click="order_no_print" type="info">未打印</el-button>
             <el-button v-on:click="order_add" type="primary">新增</el-button>
             <el-button v-on:click="order_copy" type="success" class="order_copy">复制</el-button>
             <!--<el-button v-on:click="order_print" type="warning">打印</el-button>-->
@@ -166,27 +167,28 @@
             </el-table-column>
             <el-table-column
                     fixed
-                    label="状态"
-                    width="185">
+                    label="物流"
+                    width="95">
                 <template slot-scope="scope">
-                    <el-row>
-                        <el-col :span="10">
-                            <el-tag
-                                v-bind:type="scope.row.is_printed == true ? 'success' : 'info'"
-                                close-transition>{{scope.row.printedStr}}</el-tag>
-                        </el-col>
-                        <el-col :span="14">
-                            <el-tag
-                                    v-bind:type="scope.row.is_send == true ? 'danger' : 'info'"
-                                    close-transition>{{scope.row.sendStr}}</el-tag>
-                        </el-col>
-                    </el-row>
+                    <el-tag size="small"
+                            v-bind:type="scope.row.is_send == true ? 'danger' : 'info'"
+                            close-transition>{{scope.row.sendStr}}</el-tag>
+                </template>
+            </el-table-column>
+            <el-table-column
+                    fixed="right"
+                    label="打印"
+                    width="80">
+                <template slot-scope="scope">
+                    <el-tag size="small"
+                            v-bind:type="scope.row.is_printed == true ? 'success' : 'info'"
+                            close-transition>{{scope.row.printedStr}}</el-tag>
                 </template>
             </el-table-column>
             <el-table-column
                     prop="create_at"
                     label="订单日期"
-                    width="185">
+                    width="120">
             </el-table-column>
             <el-table-column
                     prop="express_code"
@@ -242,11 +244,12 @@
                     label="区/镇">
             </el-table-column>
             <el-table-column
-                    width="300"
+                    width="500"
                     prop="street"
                     label="街道详情">
             </el-table-column>
             <el-table-column
+                    width="200"
                     prop="remarks"
                     label="备注">
             </el-table-column>
@@ -302,7 +305,7 @@
                             customer_name: '',
                             mobile_number: '',
                             agent_name: '朱忠培',
-                            agent_mobile_number: '13290165390',
+                            agent_mobile_number: '13034553801',
                             address: '',
                             remarks: ''
                         },
@@ -337,6 +340,7 @@
                         },
                         create_at: '',
                         search: '',
+                        is_printed: '',
                         pageSize: 20,
                         total: 0,
                         orders: []
@@ -368,19 +372,26 @@
                             // 成功
                             var res = response.data;
                             if(res.code == "200"){
-                                var obj = JSON.parse(res.data);
-                                if(!obj.data || obj.data.length == 0){
+                                if(res.data){
+                                    var obj = JSON.parse(res.data);
+                                    if(!obj.data || obj.data.length == 0){
+                                        me.$message({
+                                            message: '暂时没有快递单号为['+row.express_code+']的物流信息！',
+                                            type: 'warning'
+                                        });
+                                        return;
+                                    }else{
+                                        me.order_logistics = obj.data;
+                                        me.order_logistics_ischeck = obj.ischeck == '1' ? 'last finish' : 'last';
+                                        me.order_logistics_visible = true;
+                                        // 刷新订单列表
+                                        me.order_goods_load();
+                                    }
+                                }else{
                                     me.$message({
                                         message: '暂时没有快递单号为['+row.express_code+']的物流信息！',
                                         type: 'warning'
                                     });
-                                    return;
-                                }else{
-                                    me.order_logistics = obj.data;
-                                    me.order_logistics_ischeck = obj.ischeck == '1' ? 'last finish' : 'last';
-                                    me.order_logistics_visible = true;
-                                    // 刷新订单列表
-                                    me.order_goods_load();
                                 }
                             }
                         }).catch(function (error) {
@@ -481,7 +492,8 @@
                             currentNumber: this.order_current_page,
                             condition: {
                                 search: this.search,
-                                create_at: this.create_at
+                                create_at: this.create_at,
+                                is_printed: this.is_printed
                             }
                         }).then(function (response) {
                             // 成功
@@ -493,6 +505,13 @@
                         }).catch(function (error) {
                             console.log(error)
                         });
+                    },
+                    /**
+                     * 筛选未打印订单
+                     */
+                    order_no_print() {
+                        this.is_printed = 0;
+                        this.order_load();
                     },
                     /**
                      * 新增订单
@@ -508,6 +527,10 @@
                          * 加载商品
                          */
                         this.order_goods_load();
+                        /**
+                         * 重置
+                         */
+                        this.order_form_clear();
                     },
                     /**
                      * 复制订单
@@ -602,10 +625,7 @@
                             }
                         });
                     },
-                    order_reset(formName) {
-                        // 重置form表单
-                        this.$refs[formName].resetFields();
-                        //
+                    order_form_clear() {
                         this.order_form = {
                             id: '',
                             com: '',
@@ -616,10 +636,16 @@
                             customer_name: '',
                             mobile_number: '',
                             agent_name: '朱忠培',
-                            agent_mobile_number: '13290165390',
+                            agent_mobile_number: '13034553801',
                             address: '',
                             remarks: ''
                         };
+                    },
+                    order_reset(formName) {
+                        // 重置form表单
+                        if (formName) this.$refs[formName].resetFields();
+                        //
+                        this.order_form_clear();
                         // 关闭Dialog
                         this.order_dialog_visible = false;
                     },
@@ -686,10 +712,10 @@
                                 orders.forEach(function (v, idx, o) {
                                     if(command === 'A'){
                                         // 三通一达
-                                        getYuantongTpl(v);
+                                        getYuantongTpl(v, LODOP);
                                     } else if (command === 'B'){
                                         // 邮政小包
-                                        getYouzhengTpl(v)
+                                        getYouzhengTpl(v, LODOP);
                                     }
                                 });
                                 LODOP.PREVIEW();
